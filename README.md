@@ -5,5 +5,5 @@
 ## Screenshots
 
 
-<img src='Screenshot.PNG' align="right" width=960>
+<img src='Screenshot.gif' align="right" width=960>
 
