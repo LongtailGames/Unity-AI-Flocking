@@ -11,7 +11,6 @@ public class Fish : MonoBehaviour
     public float speed;
     public float RandomSpeed => UnityEngine.Random.Range(flockManager.maxSpeed, flockManager.minSpeed);
     private Vector3 myPosition;
-    private bool outsideBoundary = false;
 
     void Start()
     {
@@ -21,14 +20,11 @@ public class Fish : MonoBehaviour
     void Update()
     {
         myPosition = transform.position;
-        Bounds b = new Bounds(flockManager.transform.position, flockManager.swimBounds * 2);
-        outsideBoundary = !b.Contains(myPosition);
 
-        if (outsideBoundary)
+        if (IsOutSideBounds())
         {
             Vector3 toManager = flockManager.transform.position - myPosition;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(toManager),
-                flockManager.turnSpeed * Time.deltaTime);
+            RotateTowards(toManager, flockManager.turnSpeed);
         }
         else
         {
@@ -43,8 +39,13 @@ public class Fish : MonoBehaviour
             }
         }
 
-
         transform.Translate(Vector3.forward * (speed * Time.deltaTime));
+    }
+
+    bool IsOutSideBounds()
+    {
+        Bounds b = new Bounds(flockManager.transform.position, flockManager.swimBounds * 2);
+        return !b.Contains(myPosition);
     }
 
     private static bool PercentageChance(int percent)
