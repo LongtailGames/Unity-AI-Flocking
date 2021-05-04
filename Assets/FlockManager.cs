@@ -4,21 +4,19 @@ using Random = System.Random;
 
 public class FlockManager : GOPool
 {
-    [SerializeField] private Vector3 swimBounds = Vector3.one*5;
-    
+    [SerializeField] public Vector3 swimBounds = Vector3.one * 5;
+
     public GameObject[] flock;
-    [Header("Flock Settings")]
-    [Range(0,5)]
+
+    [Header("Flock Settings")] [Range(0, 5)]
     public float minSpeed = 1;
-    [Range(0,5)]
-    public float maxSpeed = 5;
-    [Range(1,10)]
-    public float neighborDistance = 5;
-    [Range(0,5)]
-  public float turnSpeed = 1;
+
+    [Range(0, 5)] public float maxSpeed = 5;
+    [Range(0, 10)] public float neighborDistance = 5;
+    [Range(0, 5)] public float turnSpeed = 1;
     public float avoidanceThershold = 1;
-    public Vector3 goalPosition { get; private set; }
-    private float goalFloating = 1;
+    public Vector3 GoalPosition { get; private set; }
+    [Range(0, 10)] public float goalFloating = 1;
 
     protected override void Start()
     {
@@ -29,8 +27,10 @@ public class FlockManager : GOPool
 
     private void Update()
     {
-        goalPosition = transform.position;
-        // + RandomLocation(goalFloating);
+        if (UnityEngine.Random.Range(0, 100) < 10)
+        {
+            GoalPosition = transform.position + RandomLocation(goalFloating);
+        }
     }
 
     private void InitializeFlock()
@@ -61,6 +61,7 @@ public class FlockManager : GOPool
     {
         return new Vector3(randomBetween(swimBounds.x), randomBetween(swimBounds.y), randomBetween(swimBounds.z));
     }
+
     private Vector3 RandomLocation(float max)
     {
         return new Vector3(randomBetween(max), randomBetween(max), randomBetween(max));
@@ -68,7 +69,7 @@ public class FlockManager : GOPool
 
     private float randomBetween(float max)
     {
-        return UnityEngine.Random.Range(-max,max);
+        return UnityEngine.Random.Range(-max, max);
     }
 
     private void EnableAllFish()
@@ -78,5 +79,4 @@ public class FlockManager : GOPool
             fish.SetActive(true);
         }
     }
-
 }

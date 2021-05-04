@@ -10,17 +10,46 @@ public class Fish : MonoBehaviour
     public FlockManager flockManager;
     public float speed;
     public float RandomSpeed => UnityEngine.Random.Range(flockManager.maxSpeed, flockManager.minSpeed);
+    private Vector3 myPosition;
+    private bool outsideBoundary = false;
 
     void Start()
     {
         speed = RandomSpeed;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        myPosition = transform.position;
+        Bounds b = new Bounds(flockManager.transform.position, flockManager.swimBounds * 2);
+        outsideBoundary = !b.Contains(myPosition);
+
+        if (outsideBoundary)
+        {
+            Vector3 toManager = flockManager.transform.position - myPosition;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(toManager),
+                flockManager.turnSpeed * Time.deltaTime);
+        }
+        else
+        {
+            if (PercentageChance(20))
+            {
+                ApplyRules();
+            }
+
+            if (PercentageChance(10))
+            {
+                speed = RandomSpeed;
+            }
+        }
+
+
         transform.Translate(Vector3.forward * (speed * Time.deltaTime));
-        ApplyRules();
+    }
+
+    private static bool PercentageChance(int percent)
+    {
+        return UnityEngine.Random.Range(0, 100) < percent;
     }
 
     private void ApplyRules()
@@ -35,8 +64,8 @@ public class Fish : MonoBehaviour
         Vector3 averagePosition = GroupAveragePosition(myGroup);
         Vector3 avoidanceVector = GetAvoidanceVector(myGroup);
         speed = GetGroupSpeed(myGroup);
-        Vector3 toGoal = flockManager.goalPosition - transform.position;
-        Vector3 lookDirection = (averagePosition + avoidanceVector + toGoal) - transform.position;
+        Vector3 toGoal = flockManager.GoalPosition - myPosition;
+        Vector3 lookDirection = (averagePosition + avoidanceVector + toGoal) - myPosition;
         float turnSpeed = flockManager.turnSpeed;
         RotateTowards(lookDirection, turnSpeed);
     }
@@ -44,7 +73,7 @@ public class Fish : MonoBehaviour
     private GameObject[] GetFishInGroup()
     {
         GameObject[] closeEnough = flockManager.flock.Where(o =>
-            Vector3.Distance(o.transform.position, transform.position) < flockManager.neighborDistance).ToArray();
+            Vector3.Distance(o.transform.position, myPosition) < flockManager.neighborDistance).ToArray();
 
         return closeEnough;
     }
@@ -52,7 +81,7 @@ public class Fish : MonoBehaviour
     private Vector3 GroupAveragePosition(GameObject[] myGroup)
     {
         Vector3 sum =
-            myGroup.Aggregate(new Vector3(), 
+            myGroup.Aggregate(new Vector3(),
                 (current, o) => current + o.transform.position);
 
         return sum / myGroup.Length;
@@ -64,13 +93,13 @@ public class Fish : MonoBehaviour
         float avoidThreshold = flockManager.avoidanceThershold;
         foreach (GameObject o in myGroup)
         {
-            if (Vector3.Distance(o.transform.position, transform.position) < avoidThreshold)
+            if (Vector3.Distance(o.transform.position, myPosition) < avoidThreshold)
             {
-                avoidDistanceSum += transform.position - o.transform.position;
+                avoidDistanceSum += myPosition - o.transform.position;
             }
         }
 
-        return avoidDistanceSum ;
+        return avoidDistanceSum;
     }
 
     private float GetGroupSpeed(GameObject[] myGroup)
@@ -84,6 +113,6 @@ public class Fish : MonoBehaviour
     {
 //TODO: What if look rotation is zero?
         transform.rotation =
-            Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), turnSpeed*Time.deltaTime);
+            Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), turnSpeed * Time.deltaTime);
     }
 }
