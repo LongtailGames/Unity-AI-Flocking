@@ -21,24 +21,33 @@ public class Fish : MonoBehaviour
     {
         myPosition = transform.position;
 
+        bool obstacle = Physics.Raycast(myPosition, transform.forward * 1, out RaycastHit hit);
+        if (obstacle)
+        {
+            Debug.DrawRay(myPosition, transform.forward * 1, Color.red);
+            Vector3 awayFromObstacle = Vector3.Reflect(transform.forward, hit.normal);
+            RotateTowards(awayFromObstacle, flockManager.turnSpeed);
+            transform.Translate(Vector3.forward * (speed * Time.deltaTime));
+            return;
+        }
+
         if (IsOutSideBounds())
         {
             Vector3 toManager = flockManager.transform.position - myPosition;
             RotateTowards(toManager, flockManager.turnSpeed);
+            transform.Translate(Vector3.forward * (speed * Time.deltaTime));
+            return;
         }
-        else
+
+        if (PercentageChance(20))
         {
-            if (PercentageChance(20))
-            {
-                ApplyRules();
-            }
-
-            if (PercentageChance(10))
-            {
-                speed = RandomSpeed;
-            }
+            ApplyRules();
         }
 
+        if (PercentageChance(10))
+        {
+            speed = RandomSpeed;
+        }
         transform.Translate(Vector3.forward * (speed * Time.deltaTime));
     }
 
