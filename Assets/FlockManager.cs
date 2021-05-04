@@ -17,12 +17,20 @@ public class FlockManager : GOPool
     [Range(0,5)]
   public float turnSpeed = 1;
     public float avoidanceThershold = 1;
+    public Vector3 goalPosition { get; private set; }
+    private float goalFloating = 1;
 
     protected override void Start()
     {
         base.Start();
 
         InitializeFlock();
+    }
+
+    private void Update()
+    {
+        goalPosition = transform.position;
+        // + RandomLocation(goalFloating);
     }
 
     private void InitializeFlock()
@@ -52,6 +60,10 @@ public class FlockManager : GOPool
     private Vector3 RandomFishStartLocation()
     {
         return new Vector3(randomBetween(swimBounds.x), randomBetween(swimBounds.y), randomBetween(swimBounds.z));
+    }
+    private Vector3 RandomLocation(float max)
+    {
+        return new Vector3(randomBetween(max), randomBetween(max), randomBetween(max));
     }
 
     private float randomBetween(float max)

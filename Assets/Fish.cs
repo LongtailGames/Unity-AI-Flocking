@@ -35,7 +35,8 @@ public class Fish : MonoBehaviour
         Vector3 averagePosition = GroupAveragePosition(myGroup);
         Vector3 avoidanceVector = GetAvoidanceVector(myGroup);
         speed = GetGroupSpeed(myGroup);
-        Vector3 lookDirection = (averagePosition + avoidanceVector) - transform.position;
+        Vector3 toGoal = flockManager.goalPosition - transform.position;
+        Vector3 lookDirection = (averagePosition + avoidanceVector + toGoal) - transform.position;
         float turnSpeed = flockManager.turnSpeed;
         RotateTowards(lookDirection, turnSpeed);
     }
