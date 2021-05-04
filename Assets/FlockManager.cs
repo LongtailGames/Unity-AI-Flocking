@@ -14,7 +14,8 @@ public class FlockManager : GOPool
     public float maxSpeed = 5;
     [Range(1,10)]
     public float neighborDistance = 5;
-
+    [Range(0,5)]
+  public float turnSpeed = 1;
     public float avoidanceThershold = 1;
 
     protected override void Start()

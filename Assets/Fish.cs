@@ -36,7 +36,8 @@ public class Fish : MonoBehaviour
         Vector3 avoidanceVector = GetAvoidanceVector(myGroup);
         speed = GetGroupSpeed(myGroup);
         Vector3 lookDirection = (averagePosition + avoidanceVector) - transform.position;
-        RotateTowards(lookDirection);
+        float turnSpeed = flockManager.turnSpeed;
+        RotateTowards(lookDirection, turnSpeed);
     }
 
     private GameObject[] GetFishInGroup()
@@ -68,7 +69,7 @@ public class Fish : MonoBehaviour
             }
         }
 
-        return avoidDistanceSum / myGroup.Length;
+        return avoidDistanceSum ;
     }
 
     private float GetGroupSpeed(GameObject[] myGroup)
@@ -78,10 +79,10 @@ public class Fish : MonoBehaviour
     }
 
 
-    private void RotateTowards(Vector3 lookDirection)
+    private void RotateTowards(Vector3 lookDirection, float turnSpeed)
     {
 //TODO: What if look rotation is zero?
         transform.rotation =
-            Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), Time.deltaTime);
+            Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), turnSpeed*Time.deltaTime);
     }
 }
