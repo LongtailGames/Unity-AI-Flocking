@@ -1,4 +1,4 @@
-# [Unity](https://unity.com/) Prototype
+# [Unity](https://unity.com/) Prototype of simple flocking behavior
 
 ## Project Description:
 
